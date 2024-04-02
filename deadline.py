@@ -2,10 +2,10 @@ import csv
 import datetime
 
 
-class deadline:
+class Deadline:
+
     def __init__(self, title=None, deadline=None, priority=None):
         if title is not None and deadline is not None and priority is not None:
-            dateformat = "%Y-%m-%d"
             self.title = title
             self.deadline = deadline
             self.priority = priority
@@ -35,7 +35,7 @@ class deadline:
         while True:
             try:
                 val = int(
-                    input("give valuing interpreting priority of the deadline from 1 as lowest and 3 as highest "))
+                    input("give value interpreting priority of the deadline from 1 as lowest and 3 as highest "))
                 if 1 <= val <= 3:
                     break
             except ValueError:
@@ -45,10 +45,12 @@ class deadline:
     def save_to_csv(deadline, filename):
         with open(filename, 'a', newline='') as file:
             writer = csv.writer(file)
+            deadline.deadline = deadline.deadline.strftime("%Y-%m-%d")
             writer.writerow(deadline.to_list())
 
-
-if __name__ == '__main__':
-    p1 = deadline.create_deadline()
-    deadline.save_to_csv(p1, "deadlines")
-    print(p1.deadline.__str__())
+    @classmethod
+    def csv_row(cls, csv_row):
+        print(csv_row)
+        title, date, priority = csv_row
+        date = datetime.datetime.strptime(date, "%Y-%m-%d")
+        return cls(title, date, int(priority))
