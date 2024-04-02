@@ -1,6 +1,8 @@
 import csv
 import datetime
 
+list_of_deadlines = []
+
 
 class Deadline:
 
@@ -13,6 +15,7 @@ class Deadline:
             self.title = None
             self.deadline = None
             self.priority = None
+        list_of_deadlines.append(self)
 
     def __str__(self):
         return f" \n Topic: {self.title} \n deadline {str(self.deadline)}"
@@ -50,7 +53,6 @@ class Deadline:
 
     @classmethod
     def csv_row(cls, csv_row):
-        print(csv_row)
         title, date, priority = csv_row
         date = datetime.datetime.strptime(date, "%Y-%m-%d")
         return cls(title, date, int(priority))

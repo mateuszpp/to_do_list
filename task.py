@@ -1,9 +1,11 @@
 import csv
 
+list_of_tasks = []
+
 
 class Task:
 
-    def __init__(self, title=None, priority=None, daily = None):
+    def __init__(self, title=None, priority=None, daily=None):
         if title is not None and priority is not None and daily is not None:
             self.title = title
             self.priority = priority
@@ -11,6 +13,7 @@ class Task:
         else:
             self.title = None
             self.priority = None
+        list_of_tasks.append(self)
 
     def __str__(self):
         if self.daily == 1:
@@ -37,7 +40,7 @@ class Task:
             try:
                 daily = int(
                     input("press 1 if it is daily task, else press 0"))
-                if daily == '1' or daily == '0' :
+                if daily == '1' or daily == '0':
                     break
             except ValueError:
                 print("incorrect format, give number 1 or 0 ")
@@ -50,6 +53,5 @@ class Task:
 
     @classmethod
     def csv_row(cls, csv_row):
-        print(csv_row)
         title, priority, daily = csv_row
         return cls(title, int(priority), int(daily))
