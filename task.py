@@ -26,11 +26,11 @@ class Task:
 
     @classmethod
     def create_task(cls):
-        title = input("provide the title of the task")
+        title = input("provide the title of the task\n")
         while True:
             try:
                 val = int(
-                    input("give value interpreting priority of the deadline from 1 as lowest and 3 as highest "))
+                    input("give value interpreting priority of the deadline from 1 as lowest and 3 as highest \n"))
                 if 1 <= val <= 3:
                     break
             except ValueError:
@@ -39,7 +39,7 @@ class Task:
         while True:
             try:
                 daily = int(
-                    input("press 1 if it is daily task, else press 0"))
+                    input("press 1 if it is daily task, else press 0\n"))
                 if daily == '1' or daily == '0':
                     break
             except ValueError:

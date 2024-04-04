@@ -1,10 +1,14 @@
 import csv
 import datetime
+from typing import Any
 
 list_of_deadlines = []
 
 
 class Deadline:
+
+    def __getattribute__(self, title: str) -> Any:
+        return super().__getattribute__(title)
 
     def __init__(self, title=None, deadline=None, priority=None):
         if title is not None and deadline is not None and priority is not None:
@@ -25,9 +29,9 @@ class Deadline:
 
     @classmethod
     def create_deadline(cls):
-        title = input("provide the title of the deadline")
+        title = input("provide the title of the deadline\n")
         while True:
-            data_input = input("provide the date in format: YYYY-MM-DD: ")
+            data_input = input("provide the date in format: YYYY-MM-DD: \n")
 
             try:
                 deadline = datetime.datetime.strptime(data_input, "%Y-%m-%d")
@@ -38,7 +42,7 @@ class Deadline:
         while True:
             try:
                 val = int(
-                    input("give value interpreting priority of the deadline from 1 as lowest and 3 as highest "))
+                    input("give value interpreting priority of the deadline from 1 as lowest and 3 as highest \n"))
                 if 1 <= val <= 3:
                     break
             except ValueError:

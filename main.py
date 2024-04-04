@@ -1,4 +1,6 @@
 import csv
+import datetime
+
 import task
 import deadline
 import os
@@ -15,7 +17,7 @@ def read_tasks(filename):
     with open(filename, 'r', newline='') as file:
         reader = csv.reader(file, delimiter=',')
         for row in reader:
-            task.list_of_tasks.append(task.Task.csv_row(row))
+            task.Task.csv_row(row)
 
 
 def print_deadlines():
@@ -24,32 +26,67 @@ def print_deadlines():
     for x in deadline.list_of_deadlines:
         print(f"{a} \t {x}")
         a += 1
+
+
+
+def delete():
+    print_deadlines()
     while True:
         try:
-            choice = input("to go back press 'b' to delete deadline press 'd'")
-            if choice == 'b' or choice == 'd':
+            index = input("give the index of the deadline you want to delete\n")
+            if 0 <= int(index) <= len(deadline.list_of_deadlines) - 1:
                 break
         except ValueError:
             print('incorrect value')
-    if choice == 'b':
-        starting()
-    else:
-        while True:
-            try:
-                index = input("give the index of the deadline you want to delete")
-                if 0 <= index <= len(deadline.list_of_deadlines):
-                    break
-            except ValueError:
-                print('incorrect value')
-        delete_deadline(index)
-        print_deadlines()
+    delete_deadline(int(index), 'deadlines')
 
 
-def delete_deadline(a):
+def delete_2():
+    print_tasks()
+    while True:
+        try:
+            index = input("give the index of the task you want to delete\n")
+            if 0 <= int(index) <= len(deadline.list_of_deadlines) - 1:
+                break
+        except ValueError:
+            print('incorrect value')
+    delete_task(int(index), 'tasks')
+
+
+def delete_deadline(a, filename):
+    title = deadline.list_of_deadlines[a].title
+    date = deadline.list_of_deadlines[a].deadline
+
+    rows_to_keep = []
+    with open(filename, 'r') as file:
+        reader = csv.reader(file, delimiter=',')
+
+        for row in reader:
+            if row[0] != title or row[1] != date:
+                rows_to_keep.append(row)
+
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows_to_keep)
+
     deadline.list_of_deadlines.pop(a)
 
 
-def delete_task(a):
+def delete_task(a, filename):
+    title = task.list_of_tasks[a].title
+
+    rows_to_keep = []
+    with open(filename, 'r') as file:
+        reader = csv.reader(file, delimiter=',')
+
+        for row in reader:
+            if row[0] != title:
+                rows_to_keep.append(row)
+
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows_to_keep)
+
     task.list_of_tasks.pop(a)
 
 
@@ -59,34 +96,20 @@ def print_tasks():
     for x in task.list_of_tasks:
         print(f"{a} \t {x}")
         a += 1
-    while True:
-        try:
-            choice = input("to go back press 'b' to delete task press 'd'")
-            if choice == 'b' or choice == 'd':
-                break
-        except ValueError:
-            print('incorrect value')
-    if choice == 'b':
-        starting()
-    else:
-        while True:
-            try:
-                index = input("give the index of the task you want to delete")
-                if 0 <= index <= len(task.list_of_tasks):
-                    break
-            except ValueError:
-                print('incorrect value')
-        delete_task(index)
+
 
 
 def starting():
     while True:
         try:
-            create_obj = input("1. create deadline \n"
+            create_obj = input("\n------------------------\n"
+                               "1. create deadline \n"
                                "2. create task \n"
                                "3. show all deadlines \n"
-                               "4. show all tasks \n")
-            if create_obj == '1' or create_obj == '2' or create_obj == '3' or create_obj == '4':
+                               "4. show all tasks \n"
+                               "5. delete deadline \n"
+                               "6.  delete task\n")
+            if 1 <= int(create_obj) <= 6:
                 break
         except ValueError:
             print("type 1 or 2")
@@ -97,16 +120,25 @@ def starting():
         deadline.Deadline.save_to_csv(deadline.Deadline.create_deadline(), "deadlines")
         starting()
     if create_obj == '2':
-        task.Task.create_task()
+        task.Task.save_to_csv(task.Task.create_task(), "tasks")
         starting()
     if create_obj == '3':
         print_deadlines()
-    else:
+        starting()
+    if create_obj == '4':
         print_tasks()
+        starting()
+    if create_obj == '5':
+        delete()
+        starting()
+    else:
+        delete_2()
+        starting()
 
 
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 read_tasks("tasks")
 read_deadlines('deadlines')
