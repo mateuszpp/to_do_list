@@ -1,9 +1,45 @@
 import csv
-import datetime
-
 import task
 import deadline
 import os
+from plyer import notification
+import time
+import schedule
+
+
+def send_deadline():
+    text = ""
+    for x in deadline.list_of_deadlines:
+        text += f"Deadline of {x.title} \n time until: {x.deadline} \n"
+    notification.notify(
+        title="list of deadlines: \n",
+        message=text,
+        timeout=5
+    )
+
+
+def schedule_deadline():
+    schedule.every().day.at(f"22:00").do(send_deadline)
+    schedule.every().day.at(f"22:01").do(send_deadline)
+
+
+def send_task():
+    text = ""
+    for x in task.list_of_tasks:
+        daily = ""
+        if x.daily == "1":
+            daily = ", your everyday task"
+        text += f"Task: {x.title}{daily} \n" \
+                f"-------------------------"
+    notification.notify(
+        title="list of tasks:",
+        message=text,
+        timeout=5
+    )
+
+
+def schedule_task():
+    schedule.every().hour.do(send_task())
 
 
 def read_deadlines(filename):
@@ -26,7 +62,6 @@ def print_deadlines():
     for x in deadline.list_of_deadlines:
         print(f"{a} \t {x}")
         a += 1
-
 
 
 def delete():
@@ -98,7 +133,6 @@ def print_tasks():
         a += 1
 
 
-
 def starting():
     while True:
         try:
@@ -142,4 +176,9 @@ def clear_terminal():
 
 read_tasks("tasks")
 read_deadlines('deadlines')
-starting()
+
+schedule_deadline()
+while True:
+    schedule.run_pending()
+    time.sleep(2)
+

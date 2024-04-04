@@ -40,6 +40,8 @@ class Task:
             try:
                 daily = int(
                     input("press 1 if it is daily task, else press 0\n"))
+                # daily task mean that if you check it as done today it will come back tomorrow as well, other tasks
+                # will be deleted immediately
                 if daily == '1' or daily == '0':
                     break
             except ValueError:
