@@ -1,10 +1,20 @@
 import csv
+import datetime
+import threading
 import task
 import deadline
 import os
 from plyer import notification
 import time
 import schedule
+
+
+def send_notifications():
+    schedule_deadline()
+    schedule_task()
+    while True:
+        schedule.run_pending()
+        time.sleep(2)
 
 
 def send_deadline():
@@ -19,18 +29,14 @@ def send_deadline():
 
 
 def schedule_deadline():
-    schedule.every().day.at(f"22:00").do(send_deadline)
-    schedule.every().day.at(f"22:01").do(send_deadline)
+    schedule.every().day.at(f"23:20").do(send_deadline)
+    schedule.every().day.at(f"22:21").do(send_deadline)
 
 
 def send_task():
     text = ""
     for x in task.list_of_tasks:
-        daily = ""
-        if x.daily == "1":
-            daily = ", your everyday task"
-        text += f"Task: {x.title}{daily} \n" \
-                f"-------------------------"
+        text += f"Task: {x.title} \n"
     notification.notify(
         title="list of tasks:",
         message=text,
@@ -39,14 +45,25 @@ def send_task():
 
 
 def schedule_task():
-    schedule.every().hour.do(send_task())
+    schedule.every().hour.do(send_task)
 
 
 def read_deadlines(filename):
+    rows_to_keep = []
+    # checking if the deadline is out of date, then it is deleted automatically
+    # i don't miss deadlines that's why i made it this way ;)
     with open(filename, 'r', newline='') as file:
         reader = csv.reader(file, delimiter=',')
         for row in reader:
-            deadline.Deadline.csv_row(row)
+            date = datetime.datetime.strptime(row[1], "%Y-%m-%d")
+            print(date)
+            if date >= datetime.datetime.now():
+                rows_to_keep.append(row)
+                deadline.Deadline.csv_row(row)
+
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows_to_keep)
 
 
 def read_tasks(filename):
@@ -97,6 +114,7 @@ def delete_deadline(a, filename):
         reader = csv.reader(file, delimiter=',')
 
         for row in reader:
+
             if row[0] != title or row[1] != date:
                 rows_to_keep.append(row)
 
@@ -174,11 +192,9 @@ def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
+notification_thread = threading.Thread(target=send_notifications)
+notification_thread.start()
+
 read_tasks("tasks")
 read_deadlines('deadlines')
-
-schedule_deadline()
-while True:
-    schedule.run_pending()
-    time.sleep(2)
-
+starting()

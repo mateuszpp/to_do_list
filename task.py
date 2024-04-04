@@ -5,24 +5,20 @@ list_of_tasks = []
 
 class Task:
 
-    def __init__(self, title=None, priority=None, daily=None):
-        if title is not None and priority is not None and daily is not None:
+    def __init__(self, title=None, priority=None):
+        if title is not None and priority is not None:
             self.title = title
             self.priority = priority
-            self.daily = daily
         else:
             self.title = None
             self.priority = None
         list_of_tasks.append(self)
 
     def __str__(self):
-        if self.daily == 1:
-            return f" \n Topic: {self.title}  daily task "
-        else:
             return f" \n Topic: {self.title} "
 
     def to_list(self):
-        return [self.title, self.priority, self.daily]
+        return [self.title, self.priority]
 
     @classmethod
     def create_task(cls):
@@ -46,7 +42,7 @@ class Task:
                     break
             except ValueError:
                 print("incorrect format, give number 1 or 0 ")
-        return cls(title, val, daily)
+        return cls(title, val)
 
     def save_to_csv(task, filename):
         with open(filename, 'a', newline='') as file:
@@ -55,5 +51,5 @@ class Task:
 
     @classmethod
     def csv_row(cls, csv_row):
-        title, priority, daily = csv_row
-        return cls(title, int(priority), int(daily))
+        title, priority = csv_row
+        return cls(title, int(priority))
